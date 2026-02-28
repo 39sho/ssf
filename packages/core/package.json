@@ -1,39 +1,39 @@
 {
-  "name": "@39sho/ssf-core",
-  "version": "0.0.0",
-  "type": "module",
-  "description": "Standard Schema to form field tree – framework-agnostic core for SSF",
-  "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/39sho/ssf",
-    "directory": "packages/core"
-  },
-  "homepage": "https://github.com/39sho/ssf/tree/main/packages/core#readme",
-  "files": [
-    "dist"
-  ],
-  "exports": {
-    ".": "./dist/index.mjs",
-    "./package.json": "./package.json"
-  },
-  "types": "./dist/index.d.mts",
-  "dependencies": {
-    "@standard-schema/spec": "^1.1.0"
-  },
-  "devDependencies": {
-    "@ssf/configs": "workspace:*",
-    "@types/json-schema": "^7.0.15",
-    "tsdown": "^0.20.3",
-    "zod": "^4.3.6"
-  },
-  "scripts": {
-    "build": "tsdown",
-    "dev": "tsdown --watch",
-    "typecheck": "tsc --noEmit",
-    "fmt": "biome check . --write",
-    "fmt:check": "biome check .",
-    "test": "vitest run",
-    "test:watch": "vitest --watch"
-  }
+	"name": "@39sho/ssf-core",
+	"version": "0.0.2",
+	"type": "module",
+	"description": "Standard Schema to form field tree – framework-agnostic core for SSF",
+	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/39sho/ssf",
+		"directory": "packages/core"
+	},
+	"homepage": "https://github.com/39sho/ssf/tree/main/packages/core#readme",
+	"files": [
+		"dist"
+	],
+	"exports": {
+		".": "./dist/index.mjs",
+		"./package.json": "./package.json"
+	},
+	"types": "./dist/index.d.mts",
+	"dependencies": {
+		"@standard-schema/spec": "^1.1.0"
+	},
+	"devDependencies": {
+		"@ssf/configs": "workspace:*",
+		"@types/json-schema": "^7.0.15",
+		"tsdown": "^0.20.3",
+		"zod": "^4.3.6"
+	},
+	"scripts": {
+		"build": "tsdown",
+		"dev": "tsdown --watch",
+		"typecheck": "tsc --noEmit",
+		"fmt": "biome check . --write",
+		"fmt:check": "biome check .",
+		"test": "vitest run",
+		"test:watch": "vitest --watch"
+	}
 }

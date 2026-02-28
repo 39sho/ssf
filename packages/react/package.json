@@ -1,42 +1,42 @@
 {
-  "name": "@39sho/ssf-react",
-  "version": "0.0.0",
-  "type": "module",
-  "description": "React bindings for SSF – auto-generate forms from Standard Schema",
-  "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/39sho/ssf",
-    "directory": "packages/react"
-  },
-  "homepage": "https://github.com/39sho/ssf/tree/main/packages/react#readme",
-  "files": [
-    "dist"
-  ],
-  "exports": {
-    ".": "./dist/index.mjs",
-    "./package.json": "./package.json"
-  },
-  "types": "./dist/index.d.mts",
-  "dependencies": {
-    "@39sho/ssf-core": "workspace:*",
-    "@standard-schema/spec": "^1.1.0"
-  },
-  "peerDependencies": {
-    "@tanstack/react-form": "^1.28.0",
-    "react": "^18.0.0 || ^19.0.0"
-  },
-  "devDependencies": {
-    "@ssf/configs": "workspace:*",
-    "@tanstack/react-form": "^1.28.0",
-    "@types/react": "^18.3.24",
-    "tsdown": "^0.20.3"
-  },
-  "scripts": {
-    "build": "tsdown",
-    "dev": "tsdown --watch",
-    "typecheck": "tsc --noEmit",
-    "fmt": "biome check . --write",
-    "fmt:check": "biome check ."
-  }
+	"name": "@39sho/ssf-react",
+	"version": "0.0.2",
+	"type": "module",
+	"description": "React bindings for SSF – auto-generate forms from Standard Schema",
+	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/39sho/ssf",
+		"directory": "packages/react"
+	},
+	"homepage": "https://github.com/39sho/ssf/tree/main/packages/react#readme",
+	"files": [
+		"dist"
+	],
+	"exports": {
+		".": "./dist/index.mjs",
+		"./package.json": "./package.json"
+	},
+	"types": "./dist/index.d.mts",
+	"dependencies": {
+		"@39sho/ssf-core": "workspace:*",
+		"@standard-schema/spec": "^1.1.0"
+	},
+	"peerDependencies": {
+		"@tanstack/react-form": "^1.28.0",
+		"react": "^18.0.0 || ^19.0.0"
+	},
+	"devDependencies": {
+		"@ssf/configs": "workspace:*",
+		"@tanstack/react-form": "^1.28.0",
+		"@types/react": "^18.3.24",
+		"tsdown": "^0.20.3"
+	},
+	"scripts": {
+		"build": "tsdown",
+		"dev": "tsdown --watch",
+		"typecheck": "tsc --noEmit",
+		"fmt": "biome check . --write",
+		"fmt:check": "biome check ."
+	}
 }
