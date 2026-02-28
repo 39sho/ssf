@@ -61,11 +61,12 @@ jobs:
 
       - run: pnpm turbo build
 
-      # npm publish with OIDC trusted publishing — no NPM_TOKEN needed.
+      # pnpm publish resolves workspace:* to real versions automatically.
+      # --provenance triggers OIDC token exchange — no NPM_TOKEN needed.
       - name: Publish @39sho/ssf-core
-        run: npm publish --access public --provenance --no-git-checks
         working-directory: packages/core
+        run: pnpm publish --access public --provenance --no-git-checks
 
       - name: Publish @39sho/ssf-react
-        run: npm publish --access public --provenance --no-git-checks
         working-directory: packages/react
+        run: pnpm publish --access public --provenance --no-git-checks
