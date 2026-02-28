@@ -1,0 +1,3 @@
+{
+  "extends": ["@ssf/configs/biome.json"]
+}

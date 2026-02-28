@@ -1,0 +1,7 @@
+{
+  "extends": "@ssf/configs/tsconfig.json",
+  "compilerOptions": {
+    "jsx": "react-jsx"
+  },
+  "include": ["src"]
+}

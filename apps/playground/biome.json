@@ -1,0 +1,12 @@
+{
+  "extends": ["@ssf/configs/biome.json"],
+  "files": {
+    "includes": ["!!**/dist", "!!**/node_modules", "!!.react-router"]
+  },
+  "css": {
+    "parser": {
+      "cssModules": false,
+      "tailwindDirectives": true
+    }
+  }
+}

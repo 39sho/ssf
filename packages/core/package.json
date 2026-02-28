@@ -1,0 +1,31 @@
+{
+  "name": "@ssf/core",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    ".": "./dist/index.mjs",
+    "./package.json": "./package.json"
+  },
+  "types": "./dist/index.d.mts",
+  "dependencies": {
+    "@standard-schema/spec": "^1.1.0"
+  },
+  "devDependencies": {
+    "@ssf/configs": "workspace:*",
+    "@types/json-schema": "^7.0.15",
+    "tsdown": "^0.20.3",
+    "zod": "^4.3.6"
+  },
+  "scripts": {
+    "build": "tsdown",
+    "dev": "tsdown --watch",
+    "typecheck": "tsc --noEmit",
+    "fmt": "biome check . --write",
+    "test": "vitest run",
+    "test:watch": "vitest --watch"
+  }
+}
