@@ -1,8 +1,15 @@
 {
-  "name": "@ssf/react",
-  "private": true,
+  "name": "@39sho/ssf-react",
   "version": "0.0.0",
   "type": "module",
+  "description": "React bindings for SSF – auto-generate forms from Standard Schema",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/39sho/ssf",
+    "directory": "packages/react"
+  },
+  "homepage": "https://github.com/39sho/ssf/tree/main/packages/react#readme",
   "files": [
     "dist"
   ],
@@ -12,7 +19,7 @@
   },
   "types": "./dist/index.d.mts",
   "dependencies": {
-    "@ssf/core": "workspace:*",
+    "@39sho/ssf-core": "workspace:*",
     "@standard-schema/spec": "^1.1.0"
   },
   "peerDependencies": {
@@ -29,6 +36,7 @@
     "build": "tsdown",
     "dev": "tsdown --watch",
     "typecheck": "tsc --noEmit",
-    "fmt": "biome check . --write"
+    "fmt": "biome check . --write",
+    "fmt:check": "biome check ."
   }
 }

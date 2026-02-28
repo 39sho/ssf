@@ -1,8 +1,15 @@
 {
-  "name": "@ssf/core",
-  "private": true,
+  "name": "@39sho/ssf-core",
   "version": "0.0.0",
   "type": "module",
+  "description": "Standard Schema to form field tree – framework-agnostic core for SSF",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/39sho/ssf",
+    "directory": "packages/core"
+  },
+  "homepage": "https://github.com/39sho/ssf/tree/main/packages/core#readme",
   "files": [
     "dist"
   ],
@@ -25,6 +32,7 @@
     "dev": "tsdown --watch",
     "typecheck": "tsc --noEmit",
     "fmt": "biome check . --write",
+    "fmt:check": "biome check .",
     "test": "vitest run",
     "test:watch": "vitest --watch"
   }

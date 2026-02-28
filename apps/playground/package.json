@@ -5,8 +5,8 @@
   "type": "module",
   "dependencies": {
     "@react-router/node": "^7.13.1",
-    "@ssf/core": "workspace:*",
-    "@ssf/react": "workspace:*",
+    "@39sho/ssf-core": "workspace:*",
+    "@39sho/ssf-react": "workspace:*",
     "@tanstack/react-form": "^1.28.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
@@ -36,6 +36,7 @@
     "dev": "react-router dev",
     "build": "react-router build",
     "typecheck": "react-router typegen && tsc --noEmit",
-    "fmt": "biome check . --write"
+    "fmt": "biome check . --write",
+    "fmt:check": "biome check ."
   }
 }

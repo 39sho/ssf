@@ -6,7 +6,7 @@
  * render any Zod schema as a form with `<AutoForm schema={...} />`.
  */
 
-import type { FormActionsProps, StringFieldNode } from "@ssf/core";
+import type { FormActionsProps, StringFieldNode } from "@39sho/ssf-core";
 import {
   type ArrayFieldComponentProps,
   type BooleanFieldComponentProps,
@@ -15,7 +15,7 @@ import {
   type NumberFieldComponentProps,
   type ObjectFieldComponentProps,
   type StringFieldComponentProps,
-} from "@ssf/react";
+} from "@39sho/ssf-react";
 import { Plus, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {

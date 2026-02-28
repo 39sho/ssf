@@ -3,6 +3,7 @@
     "https://turborepo.dev/": true,
     "https://biomejs.dev": true,
     "https://schemastore.org/tsconfig.json": true,
-    "https://ui.shadcn.com": true
+    "https://ui.shadcn.com": true,
+    "https://unpkg.com/@changesets/": true
   }
 }

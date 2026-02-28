@@ -6,6 +6,6 @@ export default defineConfig({
   dts: true,
   sourcemap: true,
   clean: true,
-  external: ["react", /^react\//, "@tanstack/react-form", "@ssf/core"],
+  external: ["react", /^react\//, "@tanstack/react-form", "@39sho/ssf-core"],
   exports: true,
 });

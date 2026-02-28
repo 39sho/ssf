@@ -236,7 +236,7 @@ function buildNode(
  * @example
  * ```ts
  * import z from "zod";
- * import { toFieldNode } from "@ssf/core";
+ * import { toFieldNode } from "@39sho/ssf-core";
  *
  * const schema = z.object({ name: z.string().default("") });
  * const root = toFieldNode(schema);

@@ -1,11 +1,11 @@
-import type { FieldApi, FieldNode, FieldVisitor } from "@ssf/core";
+import type { FieldApi, FieldNode, FieldVisitor } from "@39sho/ssf-core";
 import {
   defaultForKind,
   extractDefaults,
   flattenErrors,
   toFieldNode,
   walkFieldNode,
-} from "@ssf/core";
+} from "@39sho/ssf-core";
 import {
   type AnyFieldApi,
   revalidateLogic,

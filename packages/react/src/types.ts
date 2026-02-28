@@ -5,7 +5,7 @@ import type {
   FieldNode,
   FieldValueMap,
   FormActionsProps,
-} from "@ssf/core";
+} from "@39sho/ssf-core";
 import type { ComponentType } from "react";
 
 // ---------------------------------------------------------------------------

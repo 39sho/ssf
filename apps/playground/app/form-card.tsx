@@ -1,4 +1,4 @@
-import type { FormActionsProps } from "@ssf/core";
+import type { FormActionsProps } from "@39sho/ssf-core";
 import type {
   StandardJSONSchemaV1,
   StandardSchemaV1,

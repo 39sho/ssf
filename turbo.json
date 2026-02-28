@@ -16,6 +16,9 @@
 			"cache": false,
 			"dependsOn": ["^fmt"]
 		},
+		"fmt:check": {
+			"dependsOn": ["^fmt:check"]
+		},
 		"test": {
 			"dependsOn": ["^test"]
 		},
