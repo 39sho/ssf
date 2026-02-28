@@ -1,8 +1,8 @@
-import type { FormActionsProps } from "@39sho/ssf-core";
 import type {
+  FormActionsProps,
   StandardJSONSchemaV1,
   StandardSchemaV1,
-} from "@standard-schema/spec";
+} from "@39sho/ssf-core";
 import { useState } from "react";
 import { AutoForm, FormActions } from "@/auto-form";
 import {
