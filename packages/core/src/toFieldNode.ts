@@ -3,6 +3,7 @@ import type { JSONSchema7, JSONSchema7TypeName } from "json-schema";
 
 import type { ArrayFieldNode, FieldNode, FieldPath } from "./fieldNode";
 import { pathToString } from "./fieldNode";
+import { assertNever } from "./utils";
 
 // ---------------------------------------------------------------------------
 // JSON Schema Draft-07 target — used when requesting the JSON Schema
@@ -26,11 +27,9 @@ function isSchema(value: unknown): value is JSONSchema7 {
  * Build a human-readable location string for warning messages.
  * e.g. `at "speakers[0].name"` or `at root`.
  */
-function locationLabel(path: FieldPath, name: string): string {
+function locationLabel(path: FieldPath): string {
   const p = pathToString(path);
-  if (p) return `at "${p}"`;
-  if (name) return `(field "${name}")`;
-  return "at root";
+  return p ? `at "${p}"` : "at root";
 }
 
 // ---------------------------------------------------------------------------
@@ -44,7 +43,7 @@ function locationLabel(path: FieldPath, name: string): string {
  * incomplete. Pure *validation* constraints (minLength, pattern, …) are
  * intentionally omitted — they don't change the rendered form structure.
  */
-const UNSUPPORTED_STRUCTURAL_KEYWORDS: readonly string[] = [
+const UNSUPPORTED_STRUCTURAL_KEYWORDS = new Set<string>([
   // Composition — could change the type/shape of a value
   "oneOf",
   "anyOf",
@@ -61,21 +60,17 @@ const UNSUPPORTED_STRUCTURAL_KEYWORDS: readonly string[] = [
   "additionalProperties",
   "dependencies",
   "propertyNames",
-];
+]);
 
 /**
  * Emit a warning for each unsupported structural keyword found in `schema`.
  * We only warn — the field is still built from whatever we *can* interpret.
  */
-function warnUnsupportedKeywords(
-  schema: JSONSchema7,
-  path: FieldPath,
-  name: string,
-): void {
-  for (const kw of UNSUPPORTED_STRUCTURAL_KEYWORDS) {
-    if (kw in schema && (schema as Record<string, unknown>)[kw] !== undefined) {
+function warnUnsupportedKeywords(schema: JSONSchema7, path: FieldPath): void {
+  for (const key of Object.keys(schema)) {
+    if (UNSUPPORTED_STRUCTURAL_KEYWORDS.has(key)) {
       console.warn(
-        `[ssf] Unsupported JSON Schema keyword "${kw}" ${locationLabel(path, name)}. ` +
+        `[ssf] Unsupported JSON Schema keyword "${key}" ${locationLabel(path)}. ` +
           "This keyword is ignored; the field may not render as expected.",
       );
     }
@@ -129,6 +124,82 @@ function inferKind(schema: JSONSchema7): FieldNode["kind"] | "unknown" {
 }
 
 // ---------------------------------------------------------------------------
+// Per-kind builders
+// ---------------------------------------------------------------------------
+
+interface BaseNode {
+  name: string;
+  path: FieldPath;
+  title?: string;
+  description?: string;
+  defaultValue?: unknown;
+  format?: string;
+  required: boolean;
+  readOnly: boolean;
+}
+
+function buildStringNode(base: BaseNode): FieldNode {
+  return { ...base, kind: "string" };
+}
+
+function buildNumberNode(base: BaseNode): FieldNode {
+  return { ...base, kind: "number" };
+}
+
+function buildBooleanNode(base: BaseNode): FieldNode {
+  return { ...base, kind: "boolean" };
+}
+
+function buildEnumNode(base: BaseNode, schema: JSONSchema7): FieldNode {
+  return {
+    ...base,
+    kind: "enum",
+    // `const` → single-option array, `enum` → the array as-is
+    options: schema.const !== undefined ? [schema.const] : (schema.enum ?? []),
+  };
+}
+
+function buildObjectNode(
+  base: BaseNode,
+  schema: JSONSchema7,
+): FieldNode | undefined {
+  const requiredKeys = new Set(schema.required ?? []);
+  const properties: FieldNode[] = [];
+  for (const [key, value] of Object.entries(schema.properties ?? {})) {
+    if (!isSchema(value)) continue;
+    const child = buildNode(
+      value,
+      key,
+      [...base.path, key],
+      requiredKeys.has(key),
+    );
+    if (child) properties.push(child);
+  }
+  return { ...base, kind: "object", properties };
+}
+
+function buildArrayNode(
+  base: BaseNode,
+  schema: JSONSchema7,
+): FieldNode | undefined {
+  const rawItem = schema.items;
+
+  // Tuple validation (items is an array of schemas) is not supported.
+  if (Array.isArray(rawItem)) {
+    console.warn(
+      `[ssf] Tuple-style "items" (array of schemas) is not supported ` +
+        `${locationLabel(base.path)}. Only single-schema "items" is handled.`,
+    );
+    return undefined;
+  }
+
+  const itemSchema: JSONSchema7 = isSchema(rawItem) ? rawItem : {};
+  const item = buildNode(itemSchema, "0", [...base.path, 0], false);
+  if (!item) return undefined;
+  return { ...base, kind: "array", item } satisfies ArrayFieldNode;
+}
+
+// ---------------------------------------------------------------------------
 // FieldNode tree builder
 // ---------------------------------------------------------------------------
 
@@ -144,18 +215,17 @@ function buildNode(
   path: FieldPath,
   required: boolean,
 ): FieldNode | undefined {
-  // Warn about structural keywords we don't handle
-  warnUnsupportedKeywords(schema, path, name);
+  warnUnsupportedKeywords(schema, path);
 
   const kind = inferKind(schema);
   if (kind === "unknown") {
     console.warn(
-      `[ssf] Could not determine field type ${locationLabel(path, name)}. Skipping.`,
+      `[ssf] Could not determine field type ${locationLabel(path)}. Skipping.`,
     );
     return undefined;
   }
 
-  const base = {
+  const base: BaseNode = {
     name,
     path,
     title: schema.title,
@@ -167,55 +237,20 @@ function buildNode(
   };
 
   switch (kind) {
-    case "enum":
-      return {
-        ...base,
-        kind: "enum",
-        // `const` → single-option array, `enum` → the array as-is
-        options:
-          schema.const !== undefined ? [schema.const] : (schema.enum ?? []),
-      };
-
-    case "object": {
-      const requiredKeys = new Set(schema.required ?? []);
-      const properties: FieldNode[] = [];
-      for (const [key, value] of Object.entries(schema.properties ?? {})) {
-        if (!isSchema(value)) continue;
-        const child = buildNode(
-          value,
-          key,
-          [...path, key],
-          requiredKeys.has(key),
-        );
-        if (child) properties.push(child);
-      }
-      return { ...base, kind: "object", properties };
-    }
-
-    case "array": {
-      const rawItem = schema.items;
-
-      // Tuple validation (items is an array of schemas) is not supported.
-      if (Array.isArray(rawItem)) {
-        console.warn(
-          `[ssf] Tuple-style "items" (array of schemas) is not supported ` +
-            `${locationLabel(path, name)}. Only single-schema "items" is handled.`,
-        );
-        return undefined;
-      }
-
-      const itemSchema: JSONSchema7 = isSchema(rawItem) ? rawItem : {};
-      const item = buildNode(itemSchema, "0", [...path, 0], false);
-      if (!item) return undefined;
-      return { ...base, kind: "array", item } satisfies ArrayFieldNode;
-    }
-
     case "string":
-      return { ...base, kind: "string" };
+      return buildStringNode(base);
     case "number":
-      return { ...base, kind: "number" };
+      return buildNumberNode(base);
     case "boolean":
-      return { ...base, kind: "boolean" };
+      return buildBooleanNode(base);
+    case "enum":
+      return buildEnumNode(base, schema);
+    case "object":
+      return buildObjectNode(base, schema);
+    case "array":
+      return buildArrayNode(base, schema);
+    default:
+      return assertNever(kind);
   }
 }
 

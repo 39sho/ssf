@@ -17,12 +17,18 @@ export type {
   ObjectFieldNode,
   StringFieldNode,
 } from "./fieldNode";
-export { defaultForKind, extractDefaults, pathToString } from "./fieldNode";
+export {
+  cloneArrayItem,
+  defaultForKind,
+  extractDefaults,
+  pathToString,
+} from "./fieldNode";
 // Schema → FieldNode conversion
 export { toFieldNode } from "./toFieldNode";
-// Form types & utilities
-export type { FieldApi, FieldValueMap, FormActionsProps } from "./types";
+// Error utility
 export { flattenErrors } from "./types";
+// Internal runtime assertion (exported for advanced consumers)
+export { assertNever } from "./utils";
 // Recursive tree walker
 export type { ArrayItem, FieldVisitor } from "./walk";
 export { walkFieldNode } from "./walk";

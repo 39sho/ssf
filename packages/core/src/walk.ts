@@ -8,6 +8,7 @@ import type {
   StringFieldNode,
 } from "./fieldNode";
 import { pathToString } from "./fieldNode";
+import { assertNever } from "./utils";
 
 // ---------------------------------------------------------------------------
 // ArrayItem — keyed render output for array elements
@@ -102,5 +103,8 @@ export function walkFieldNode<R>(
         key: pathToString(itemNode.path),
         rendered: walkFieldNode(itemNode, visitor),
       }));
+
+    default:
+      return assertNever(node);
   }
 }

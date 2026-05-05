@@ -13,11 +13,17 @@
   "files": [
     "dist"
   ],
+  "main": "./dist/index.mjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.mts",
   "exports": {
-    ".": "./dist/index.mjs",
+    ".": {
+      "types": "./dist/index.d.mts",
+      "import": "./dist/index.mjs",
+      "default": "./dist/index.mjs"
+    },
     "./package.json": "./package.json"
   },
-  "types": "./dist/index.d.mts",
   "dependencies": {
     "@39sho/ssf-core": "workspace:*",
     "@standard-schema/spec": "^1.1.0"
@@ -29,7 +35,8 @@
   "devDependencies": {
     "@ssf/configs": "workspace:*",
     "@tanstack/react-form": "^1.28.0",
-    "@types/react": "^18.3.24",
+    "@types/node": "^22.0.0",
+    "@types/react": "^19.2.3",
     "tsdown": "^0.20.3"
   },
   "scripts": {

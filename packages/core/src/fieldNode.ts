@@ -24,20 +24,11 @@ export type FieldPath = readonly FieldKey[];
  * ```
  */
 export function pathToString(path: FieldPath): string {
-  if (path.length === 0) return "";
-  let out = "";
-  for (const segment of path) {
-    if (typeof segment === "number") {
-      out += `[${segment}]`;
-      continue;
-    }
-    if (out.length === 0) {
-      out += segment;
-    } else {
-      out += `.${segment}`;
-    }
-  }
-  return out;
+  return path.reduce<string>(
+    (out, seg) =>
+      typeof seg === "number" ? `${out}[${seg}]` : out ? `${out}.${seg}` : seg,
+    "",
+  );
 }
 
 // ---------------------------------------------------------------------------
@@ -130,6 +121,8 @@ export type FieldNode =
 // FieldNode utilities
 // ---------------------------------------------------------------------------
 
+import { assertNever } from "./utils";
+
 /**
  * Return a sensible empty/zero-value default for a given field kind.
  *
@@ -160,7 +153,19 @@ export function defaultForKind(kind: FieldKind): unknown {
       return {};
     case "array":
       return [];
+    default:
+      return assertNever(kind);
   }
+}
+
+/**
+ * Create a copy of an array item node with the correct index-based path.
+ *
+ * Framework bindings use this to render each element of an array field
+ * without manually cloning the node shape.
+ */
+export function cloneArrayItem(node: ArrayFieldNode, index: number): FieldNode {
+  return { ...node.item, name: String(index), path: [...node.path, index] };
 }
 
 /**
@@ -187,17 +192,19 @@ export function extractDefaults(node: FieldNode): unknown {
     case "object": {
       const obj: Record<string, unknown> = {};
       for (const child of node.properties) {
-        const val = extractDefaults(child);
-        if (val !== undefined) {
-          obj[child.name] = val;
-        }
+        obj[child.name] = extractDefaults(child);
       }
       // Prefer assembled child defaults over the object-level fallback.
       return Object.keys(obj).length > 0 ? obj : node.defaultValue;
     }
     case "array":
       return node.defaultValue ?? [];
-    default:
+    case "string":
+    case "number":
+    case "boolean":
+    case "enum":
       return node.defaultValue;
+    default:
+      return assertNever(node);
   }
 }

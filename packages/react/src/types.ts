@@ -1,106 +1,113 @@
 import type {
+  ArrayFieldNode,
   ArrayItem,
-  FieldApi,
   FieldKind,
-  FieldNode,
-  FieldValueMap,
-  FormActionsProps,
+  ObjectFieldNode,
 } from "@39sho/ssf-core";
-import type { ComponentType } from "react";
+import type { AnyFieldApi } from "@tanstack/react-form";
+import type { ComponentType, ReactNode } from "react";
+
+// ---------------------------------------------------------------------------
+// Component name convention: kind -> registered component name
+// ---------------------------------------------------------------------------
+
+export const FIELD_KIND_TO_COMPONENT_NAME = {
+  string: "TextField",
+  number: "NumberField",
+  boolean: "BooleanField",
+  enum: "EnumField",
+  object: "ObjectField",
+  array: "ArrayField",
+} as const satisfies Record<FieldKind, string>;
+
+export type FieldComponentName =
+  (typeof FIELD_KIND_TO_COMPONENT_NAME)[FieldKind];
 
 // ---------------------------------------------------------------------------
 // FieldComponentProps — per-kind props passed to user-supplied components
 // ---------------------------------------------------------------------------
 
-/** Extracts the FieldNode subtype for a given kind. */
-type FieldNodeFor<K extends FieldKind> = Extract<FieldNode, { kind: K }>;
-
-/** Base props shared across every field component. */
-interface BaseFieldComponentProps<K extends FieldKind> {
-  fieldNode: FieldNodeFor<K>;
-  field: FieldApi<FieldValueMap[K]>;
+export interface TextFieldComponentProps {
+  fieldNode: {
+    kind: "string";
+    name: string;
+    title?: string;
+    description?: string;
+    required: boolean;
+    format?: string;
+  };
 }
 
-export interface StringFieldComponentProps
-  extends BaseFieldComponentProps<"string"> {}
+export interface NumberFieldComponentProps {
+  fieldNode: {
+    kind: "number";
+    name: string;
+    title?: string;
+    description?: string;
+    required: boolean;
+  };
+}
 
-export interface NumberFieldComponentProps
-  extends BaseFieldComponentProps<"number"> {}
+export interface BooleanFieldComponentProps {
+  fieldNode: {
+    kind: "boolean";
+    name: string;
+    title?: string;
+    description?: string;
+    required: boolean;
+  };
+}
 
-export interface BooleanFieldComponentProps
-  extends BaseFieldComponentProps<"boolean"> {}
-
-export interface EnumFieldComponentProps
-  extends BaseFieldComponentProps<"enum"> {}
+export interface EnumFieldComponentProps {
+  fieldNode: {
+    kind: "enum";
+    name: string;
+    title?: string;
+    description?: string;
+    required: boolean;
+    options: readonly (string | number | boolean)[];
+  };
+}
 
 export interface ObjectFieldComponentProps {
-  fieldNode: FieldNodeFor<"object">;
-  /**
-   * Field API for this object. `undefined` for the root object since it is
-   * not bound to a TanStack Form field.
-   */
-  field?: FieldApi<FieldValueMap["object"]>;
-  /** Pre-rendered child fields (recursively rendered by AutoForm). */
-  children: React.ReactNode;
+  fieldNode: ObjectFieldNode;
+  /** Pre-rendered child fields (recursively rendered by AutoFields). */
+  children: ReactNode;
 }
 
-export interface ArrayFieldComponentProps
-  extends BaseFieldComponentProps<"array"> {
+export interface ArrayFieldComponentProps {
+  fieldNode: ArrayFieldNode;
   /** Pre-rendered items with stable keys (one entry per array element). */
-  items: readonly ArrayItem<React.ReactNode>[];
-  /** Append a new item with optional initial value. */
-  onPush: (value?: unknown) => void;
-  /** Remove the item at given index. */
-  onRemove: (index: number) => void;
-}
-
-/** Union of all field component props, keyed by kind. */
-export interface FieldComponentPropsMap {
-  string: StringFieldComponentProps;
-  number: NumberFieldComponentProps;
-  boolean: BooleanFieldComponentProps;
-  enum: EnumFieldComponentProps;
-  object: ObjectFieldComponentProps;
-  array: ArrayFieldComponentProps;
+  items: readonly ArrayItem<ReactNode>[];
 }
 
 // ---------------------------------------------------------------------------
-// FieldComponents — user-supplied component map
+// ArrayItem — re-exported from core for consumer convenience
 // ---------------------------------------------------------------------------
 
-/**
- * A mapping from FieldKind to the React component that should render it.
- *
- * All entries are optional — kinds without a matching component are skipped.
- */
-export type FieldComponents = {
-  [K in FieldKind]?: ComponentType<FieldComponentPropsMap[K]>;
-};
+export type { ArrayItem } from "@39sho/ssf-core";
 
 // ---------------------------------------------------------------------------
-// AutoFormProps
+// AutoFieldsProps
 // ---------------------------------------------------------------------------
 
-export interface AutoFormProps<TInput, TOutput = TInput> {
+/** Minimal form API surface required by AutoFields (useAppForm result). */
+export interface FormApiLike {
+  AppField: ComponentType<{
+    name: string;
+    mode?: "array";
+    children: (field: AnyFieldApi) => ReactNode;
+  }>;
+}
+
+export interface AutoFieldsProps {
   /**
-   * A Standard Schema that supports both validation and JSON Schema generation.
-   * Typically a Zod, Valibot, or ArkType schema.
+   * A TanStack Form instance returned from `useAppForm`.
+   * AutoFields only needs `form.AppField` to bind each field.
    */
-  schema: import("@standard-schema/spec").StandardSchemaV1<TInput, TOutput> &
-    import("@standard-schema/spec").StandardJSONSchemaV1<TInput, TOutput>;
-  /** Component map for rendering each field kind. */
-  components: FieldComponents;
-  /** Called with the validated output value on successful submit. */
-  onSubmit: (value: TOutput) => void | Promise<void>;
-  /**
-   * Optional render prop for the form action buttons (submit, reset, etc.).
-   * If omitted, a default submit button is rendered.
-   */
-  formActions?: (props: FormActionsProps) => React.ReactNode;
+  form: FormApiLike;
+  /** Pre-built FieldNode tree from `getSsfFormOptions(schema).rootNode`. */
+  rootNode: ObjectFieldNode;
 }
 
-/** Props accepted by an AutoForm component created via `createAutoForm`. */
-export type CreateAutoFormProps<TInput, TOutput = TInput> = Omit<
-  AutoFormProps<TInput, TOutput>,
-  "components"
->;
+export type { AnyFieldApi } from "@tanstack/react-form";

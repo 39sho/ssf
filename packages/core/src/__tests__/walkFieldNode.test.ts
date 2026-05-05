@@ -1,46 +1,8 @@
 import { describe, expect, it } from "vitest";
-import type {
-  ArrayFieldNode,
-  FieldNode,
-  ObjectFieldNode,
-  StringFieldNode,
-} from "../fieldNode";
+import { cloneArrayItem } from "../fieldNode";
 import type { ArrayItem, FieldVisitor } from "../walk";
 import { walkFieldNode } from "../walk";
-
-// ---------------------------------------------------------------------------
-// Helper: build minimal FieldNode objects for testing
-// ---------------------------------------------------------------------------
-
-function str(
-  name: string,
-  path: (string | number)[] = [name],
-): StringFieldNode {
-  return { kind: "string", name, path, required: false, readOnly: false };
-}
-
-function obj(
-  name: string,
-  properties: FieldNode[],
-  path: (string | number)[] = name ? [name] : [],
-): ObjectFieldNode {
-  return {
-    kind: "object",
-    name,
-    path,
-    required: false,
-    readOnly: false,
-    properties,
-  };
-}
-
-function arr(
-  name: string,
-  item: FieldNode,
-  path: (string | number)[] = [name],
-): ArrayFieldNode {
-  return { kind: "array", name, path, required: false, readOnly: false, item };
-}
+import { arr, obj, str } from "./helpers";
 
 // ---------------------------------------------------------------------------
 // A simple visitor that collects field names as strings (for easy assertion).
@@ -138,7 +100,9 @@ describe("walkFieldNode", () => {
     const { visitor, collected } = createCollectorVisitor();
     const root = obj("", [
       str("title"),
-      obj("address", [str("city", ["address", "city"])], ["address"]),
+      obj("address", [str("city", undefined, ["address", "city"])], undefined, [
+        "address",
+      ]),
     ]);
     walkFieldNode(root, visitor);
 
@@ -169,20 +133,15 @@ describe("walkFieldNode", () => {
         return "obj";
       },
       array(node, fieldName, walkItem) {
-        // Simulate 2 array elements
+        // Simulate 2 array elements using the helper
         for (let i = 0; i < 2; i++) {
-          const itemNode: FieldNode = {
-            ...node.item,
-            name: String(i),
-            path: [...node.path, i],
-          };
-          items.push(walkItem(itemNode));
+          items.push(walkItem(cloneArrayItem(node, i)));
         }
         return `array:${fieldName}`;
       },
     };
 
-    const root = arr("tags", str("0", ["tags", 0]));
+    const root = arr("tags", str("0", undefined, ["tags", 0]));
     const result = walkFieldNode(root, visitor);
 
     expect(result).toBe("array:tags");
@@ -213,12 +172,7 @@ describe("walkFieldNode", () => {
       },
       array(node, _fn, walkItem) {
         for (let i = 0; i < 3; i++) {
-          const itemNode: FieldNode = {
-            ...node.item,
-            name: String(i),
-            path: [...node.path, i],
-          };
-          keys.push(walkItem(itemNode).key);
+          keys.push(walkItem(cloneArrayItem(node, i)).key);
         }
         return "arr";
       },
@@ -227,7 +181,10 @@ describe("walkFieldNode", () => {
     walkFieldNode(
       arr(
         "speakers",
-        obj("0", [str("name", ["speakers", 0, "name"])], ["speakers", 0]),
+        obj("0", [str("name", undefined, ["speakers", 0, "name"])], undefined, [
+          "speakers",
+          0,
+        ]),
       ),
       visitor,
     );
@@ -289,7 +246,7 @@ describe("walkFieldNode", () => {
       },
     };
 
-    walkFieldNode(str("x", ["a", "b"]), visitor);
+    walkFieldNode(str("x", undefined, ["a", "b"]), visitor);
     expect(fieldNames).toEqual(["a.b"]);
   });
 });

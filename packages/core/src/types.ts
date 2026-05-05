@@ -1,39 +1,4 @@
 // ---------------------------------------------------------------------------
-// FieldApi — thin abstraction over the underlying form library's field state
-// ---------------------------------------------------------------------------
-
-export interface FieldApi<TValue = unknown> {
-  /** Current field value. */
-  readonly value: TValue;
-  /** Flat list of validation error messages. */
-  readonly errors: readonly string[];
-  /** Whether the user has interacted with this field. */
-  readonly isTouched: boolean;
-  /** Whether the value differs from the initial value. */
-  readonly isDirty: boolean;
-  /** Whether async validation is in progress. */
-  readonly isValidating: boolean;
-  /** Update the field value. */
-  handleChange(value: TValue): void;
-  /** Notify that the field lost focus. */
-  handleBlur(): void;
-}
-
-// ---------------------------------------------------------------------------
-// FieldValueMap — maps FieldKind to its primary value type
-// ---------------------------------------------------------------------------
-
-/** Maps a FieldKind to its primary value type. */
-export interface FieldValueMap {
-  string: string;
-  number: number;
-  boolean: boolean;
-  enum: unknown;
-  object: Record<string, unknown>;
-  array: unknown[];
-}
-
-// ---------------------------------------------------------------------------
 // Error flattening
 // ---------------------------------------------------------------------------
 
@@ -62,16 +27,4 @@ export function flattenErrors(errors: readonly unknown[]): string[] {
     }
   }
   return out;
-}
-
-// ---------------------------------------------------------------------------
-// FormActionsProps
-// ---------------------------------------------------------------------------
-
-/** State passed to the `formActions` render prop. */
-export interface FormActionsProps {
-  /** Whether the form is currently submitting. */
-  isSubmitting: boolean;
-  /** Reset the form to its default values. */
-  reset: () => void;
 }

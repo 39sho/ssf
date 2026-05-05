@@ -6,11 +6,12 @@ import {
   ScrollRestoration,
 } from "react-router";
 import "./index.css";
+import { href } from "react-router";
 
 const navItems = [
-  { to: "/basic", label: "Basic" },
-  { to: "/profile", label: "Profile" },
-  { to: "/event", label: "Event Registration" },
+  { to: href("/basic"), label: "Basic" },
+  { to: href("/profile"), label: "Profile" },
+  { to: href("/event"), label: "Event Registration" },
 ];
 
 export function Layout({ children }: { children: React.ReactNode }) {

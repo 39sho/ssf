@@ -1,3 +1,10 @@
 {
-  "extends": ["@ssf/configs/biome.json"]
+  "extends": ["@ssf/configs/biome.json"],
+  "linter": {
+    "rules": {
+      "suspicious": {
+        "noExplicitAny": "off"
+      }
+    }
+  }
 }

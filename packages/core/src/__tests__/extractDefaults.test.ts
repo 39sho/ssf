@@ -1,71 +1,6 @@
 import { describe, expect, it } from "vitest";
-import type { FieldNode } from "../fieldNode";
 import { extractDefaults } from "../fieldNode";
-
-// ---------------------------------------------------------------------------
-// Helper: build minimal FieldNode objects for testing
-// ---------------------------------------------------------------------------
-
-function str(name: string, defaultValue?: unknown): FieldNode {
-  return {
-    kind: "string",
-    name,
-    path: [name],
-    required: false,
-    readOnly: false,
-    defaultValue,
-  };
-}
-
-function num(name: string, defaultValue?: unknown): FieldNode {
-  return {
-    kind: "number",
-    name,
-    path: [name],
-    required: false,
-    readOnly: false,
-    defaultValue,
-  };
-}
-
-function bool(name: string, defaultValue?: unknown): FieldNode {
-  return {
-    kind: "boolean",
-    name,
-    path: [name],
-    required: false,
-    readOnly: false,
-    defaultValue,
-  };
-}
-
-function obj(
-  name: string,
-  properties: FieldNode[],
-  defaultValue?: unknown,
-): FieldNode {
-  return {
-    kind: "object",
-    name,
-    path: name ? [name] : [],
-    required: false,
-    readOnly: false,
-    properties,
-    defaultValue,
-  };
-}
-
-function arr(name: string, item: FieldNode, defaultValue?: unknown): FieldNode {
-  return {
-    kind: "array",
-    name,
-    path: [name],
-    required: false,
-    readOnly: false,
-    item,
-    defaultValue,
-  };
-}
+import { arr, bool, num, obj, str } from "./helpers";
 
 // ---------------------------------------------------------------------------
 // Tests
@@ -97,10 +32,12 @@ describe("extractDefaults", () => {
     expect(extractDefaults(bool("z", false))).toBe(false);
   });
 
-  it("returns object defaultValue when no child has defaults", () => {
-    const fallback = { foo: "bar" };
-    const node = obj("", [str("name"), num("age")], fallback);
-    expect(extractDefaults(node)).toEqual(fallback);
+  it("returns object with undefined values when no child has defaults", () => {
+    const node = obj("", [str("name"), num("age")]);
+    expect(extractDefaults(node)).toEqual({
+      name: undefined,
+      age: undefined,
+    });
   });
 
   it("prefers child defaults over object defaultValue", () => {
@@ -129,12 +66,16 @@ describe("extractDefaults", () => {
     expect(extractDefaults(node)).toEqual(["a", "b"]);
   });
 
-  it("omits children without defaults from the result", () => {
+  it("includes children without defaults as undefined", () => {
     const node = obj("", [
       str("name", "John"),
       str("bio"), // no default
       num("age", 0),
     ]);
-    expect(extractDefaults(node)).toEqual({ name: "John", age: 0 });
+    expect(extractDefaults(node)).toEqual({
+      name: "John",
+      bio: undefined,
+      age: 0,
+    });
   });
 });

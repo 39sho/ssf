@@ -402,21 +402,6 @@ describe("toFieldNode", () => {
       warnSpy.mockClear();
     });
 
-    it("warns when schema type cannot be determined", () => {
-      // A schema with no type, no enum, no const → "unknown"
-      const schema = z.object({
-        name: z.string().default(""),
-      });
-      const root = toFieldNode(schema);
-      assertObject(root);
-
-      // The root itself is fine, but let's test a field we build manually
-      // by checking the warning is emitted for a type:null-only field
-      // This is hard to trigger via Zod, so we just verify that valid
-      // schemas don't produce spurious warnings
-      expect(root.properties).toHaveLength(1);
-    });
-
     it("preserves field order from the schema", () => {
       const schema = z.object({
         first: z.string().default(""),
