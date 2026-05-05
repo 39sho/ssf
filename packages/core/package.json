@@ -1,6 +1,6 @@
 {
   "name": "@39sho/ssf-core",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "type": "module",
   "description": "Standard Schema to form field tree – framework-agnostic core for SSF",
   "license": "MIT",
