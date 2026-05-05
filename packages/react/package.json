@@ -1,6 +1,6 @@
 {
   "name": "@39sho/ssf-react",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "type": "module",
   "description": "React bindings for SSF – auto-generate forms from Standard Schema",
   "license": "MIT",
