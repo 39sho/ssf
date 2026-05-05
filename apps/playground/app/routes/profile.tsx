@@ -24,24 +24,23 @@ const schema = z.object({
     .min(3, "At least 3 characters.")
     .max(20, "At most 20 characters.")
     .regex(/^[a-zA-Z0-9_]+$/, "Only letters, numbers, and underscores.")
-    .default("")
     .meta({ title: "Username", description: "Your public display name." }),
-  email: z.email("Please enter a valid email.").default("").meta({
+  email: z.email("Please enter a valid email.").meta({
     title: "Email",
     format: "email",
   }),
-  role: z.enum(["viewer", "editor", "admin"]).default("viewer").meta({
+  role: z.enum(["viewer", "editor", "admin"]).meta({
     title: "Role",
     description: "Access level for this user.",
   }),
   bio: z
     .string()
     .max(200, "At most 200 characters.")
-    .default("")
     .meta({ title: "Bio", format: "textarea" }),
-  publicProfile: z.boolean().default(true).meta({
+  publicProfile: z.boolean().meta({
     title: "Public Profile",
     description: "Make your profile visible to everyone.",
+    default: true,
   }),
 });
 

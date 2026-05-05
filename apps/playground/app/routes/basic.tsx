@@ -19,17 +19,19 @@ import {
 import { useAppForm } from "@/form-context";
 
 const schema = z.object({
-  name: z.string().min(1, "Name is required.").default("").meta({
+  name: z.string().min(1, "Name is required.").meta({
     title: "Name",
+    default: "defalut value",
   }),
   age: z
     .number()
     .min(0, "Must be 0 or greater.")
     .max(150, "Please enter a valid age.")
     .meta({ title: "Age" }),
-  subscribe: z.boolean().default(false).meta({
+  subscribe: z.boolean().meta({
     title: "Subscribe",
     description: "Receive occasional updates via email.",
+    default: false,
   }),
 });
 

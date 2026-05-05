@@ -20,23 +20,23 @@ describe("extractDefaults", () => {
     });
   });
 
-  it("returns undefined for leaf nodes without defaults", () => {
-    expect(extractDefaults(str("x"))).toBeUndefined();
-    expect(extractDefaults(num("y"))).toBeUndefined();
-    expect(extractDefaults(bool("z"))).toBeUndefined();
+  it("returns kind defaults for leaf nodes without explicit defaults", () => {
+    expect(extractDefaults(str("x"))).toBe("");
+    expect(extractDefaults(num("y"))).toBe(0);
+    expect(extractDefaults(bool("z"))).toBe(false);
   });
 
-  it("returns leaf default values", () => {
+  it("returns leaf default values when explicitly set", () => {
     expect(extractDefaults(str("x", "hello"))).toBe("hello");
     expect(extractDefaults(num("y", 42))).toBe(42);
     expect(extractDefaults(bool("z", false))).toBe(false);
   });
 
-  it("returns object with undefined values when no child has defaults", () => {
+  it("returns object with kind defaults when no child has explicit defaults", () => {
     const node = obj("", [str("name"), num("age")]);
     expect(extractDefaults(node)).toEqual({
-      name: undefined,
-      age: undefined,
+      name: "",
+      age: 0,
     });
   });
 
@@ -66,15 +66,15 @@ describe("extractDefaults", () => {
     expect(extractDefaults(node)).toEqual(["a", "b"]);
   });
 
-  it("includes children without defaults as undefined", () => {
+  it("fills missing child defaults with kind defaults", () => {
     const node = obj("", [
       str("name", "John"),
-      str("bio"), // no default
+      str("bio"), // no explicit default → falls back to ""
       num("age", 0),
     ]);
     expect(extractDefaults(node)).toEqual({
       name: "John",
-      bio: undefined,
+      bio: "",
       age: 0,
     });
   });

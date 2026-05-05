@@ -343,7 +343,7 @@ export function ArrayField({ fieldNode, items }: ArrayFieldComponentProps) {
         type="button"
         variant="outline"
         size="sm"
-        onClick={() => field.pushValue(extractDefaults(fieldNode.item) ?? {})}
+        onClick={() => field.pushValue(extractDefaults(fieldNode.item))}
       >
         <Plus className="size-4 mr-1" />
         Add

@@ -19,25 +19,23 @@ import {
 import { useAppForm } from "@/form-context";
 
 const schema = z.object({
-  eventName: z.string().min(1, "Event name is required.").default("").meta({
+  eventName: z.string().min(1, "Event name is required.").meta({
     title: "Event Name",
   }),
-  date: z.string().min(1, "Date is required.").default("").meta({
+  date: z.string().min(1, "Date is required.").meta({
     title: "Date",
     format: "date",
   }),
-  category: z
-    .enum(["conference", "workshop", "meetup", "webinar"])
-    .default("conference")
-    .meta({
-      title: "Category",
-    }),
+  category: z.enum(["conference", "workshop", "meetup", "webinar"]).meta({
+    title: "Category",
+    default: "conference",
+  }),
   location: z
     .object({
-      venue: z.string().min(1, "Venue is required.").default("").meta({
+      venue: z.string().min(1, "Venue is required.").meta({
         title: "Venue",
       }),
-      city: z.string().min(1, "City is required.").default("").meta({
+      city: z.string().min(1, "City is required.").meta({
         title: "City",
       }),
     })
@@ -48,10 +46,10 @@ const schema = z.object({
   speakers: z
     .array(
       z.object({
-        name: z.string().min(1, "Speaker name is required.").default("").meta({
+        name: z.string().min(1, "Speaker name is required.").meta({
           title: "Name",
         }),
-        topic: z.string().default("").meta({
+        topic: z.string().meta({
           title: "Topic",
         }),
       }),
@@ -61,9 +59,10 @@ const schema = z.object({
       title: "Speakers",
       description: "Add speakers and their topics.",
     }),
-  online: z.boolean().default(false).meta({
+  online: z.boolean().meta({
     title: "Online Event",
     description: "This event has a virtual attendance option.",
+    default: false,
   }),
 });
 

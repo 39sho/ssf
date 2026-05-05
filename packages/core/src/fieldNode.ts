@@ -203,7 +203,7 @@ export function extractDefaults(node: FieldNode): unknown {
     case "number":
     case "boolean":
     case "enum":
-      return node.defaultValue;
+      return node.defaultValue ?? defaultForKind(node.kind);
     default:
       return assertNever(node);
   }
